@@ -1,0 +1,86 @@
+.appContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh; /* Занимает всю высоту экрана */
+	background-color: #f0f2f5;
+}
+
+.formContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	background: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	width: 100%;
+}
+
+.inputField {
+	width: 100%;
+	padding: 12px 15px;
+	margin: 10px 0;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 16px;
+	text-align: center;
+}
+
+.inputField:focus {
+	border-color: #007bff;
+	box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+	outline: none;
+}
+
+.errorLabel {
+	color: #ff4d4f;
+	font-size: 14px;
+	margin-top: -10px;
+	margin-bottom: 10px;
+	text-align: left;
+	width: 100%;
+}
+
+.submitButton {
+	background-color: #007bff;
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.submitButton:disabled {
+	background-color: #c0c0c0;
+	cursor: not-allowed;
+}
+
+.submitButton:not(:disabled):hover {
+	background-color: #0056b3;
+}
+
+.header {
+	font-size: 24px;
+	margin-bottom: 20px;
+	color: #333;
+}
+
+.formFieldContainer {
+	width: 100%;
+}
+
+@media (max-width: 600px) {
+	.formContainer {
+		margin: 20px;
+		padding: 15px;
+	}
+
+	.header {
+		font-size: 20px;
+	}
+}
