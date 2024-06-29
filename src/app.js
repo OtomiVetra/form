@@ -1,117 +1,79 @@
 import styles from './app.module.css';
-import React, { useState, useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const fieldScheme = yup.object().shape({
+	email: yup
+		.string()
+		.email('неверный email')
+		.min(3, 'должно быть больше 3х символов')
+		.max(25, 'должно быть меньше 25 символов')
+		.required('Email обязателен'),
+	password: yup
+		.string()
+		.min(8, 'Пароль должен быть не менее 8 символов')
+		.required('Пароль обязателен'),
+	confirmPassword: yup
+		.string()
+		.oneOf([yup.ref('password'), null], 'Пароли должны совпадать')
+		.required('Подтверждение пароля обязательно'),
+});
 
 export const App = () => {
-	const [email, setEmail] = useState('');
-	const [emailError, setEmailError] = useState(null);
-	const [password, setPassword] = useState('');
-	const [passwordError, setPasswordError] = useState(null);
-	const [confirmPassword, setConfirmPassword] = useState('');
-	const [confirmPasswordError, setConfirmPasswordError] = useState(null);
-	const submitButtonRef = useRef(null);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			email: '',
+			password: '',
+			confirmPassword: '',
+		},
+		resolver: yupResolver(fieldScheme),
+	});
 
-	const onEmailChange = ({ target }) => {
-		setEmail(target.value);
+	const emailError = errors.email?.message;
+	const passwordError = errors.password?.message;
+	const confirmPasswordError = errors.confirmPassword?.message;
 
-		let error = null;
-
-		if (!emailPattern.test(target.value)) {
-			error = 'Неверный email.';
-		}
-		setEmailError(error);
-	};
-
-	const onPasswordChange = ({ target }) => {
-		setPassword(target.value);
-
-		let error = null;
-
-		if (target.value.length < 6) {
-			error = 'Пароль должен содержать не менее 6 символов.';
-		}
-		setPasswordError(error);
-	};
-
-	const onConfirmPasswordChange = ({ target }) => {
-		setConfirmPassword(target.value);
-
-		let error = null;
-		if (target.value !== password) {
-			error = 'Пароли не совпадают.';
-		}
-		setConfirmPasswordError(error);
-	};
-
-	const onEmailBlur = () => {
-		if (email.length < 4) {
-			setEmailError('Неверный email, должно быть не меньше 4 символов');
-		}
-	};
-
-	useEffect(() => {
-		if (
-			email &&
-			!emailError &&
-			password &&
-			!passwordError &&
-			confirmPassword &&
-			!confirmPasswordError
-		) {
-			submitButtonRef.current.focus();
-		}
-	}, [email, emailError, password, passwordError, confirmPassword, confirmPasswordError]);
-
-	const onSubmit = (event) => {
-		event.preventDefault();
-		console.log(email, password);
+	const onSubmit = (formData) => {
+		console.log(formData);
 	};
 
 	return (
 		<div className={styles.appContainer}>
-			<form onSubmit={onSubmit} className={styles.formContainer}>
-				<div className={styles.header}>Регистрация</div>
+			<form onSubmit={handleSubmit(onSubmit)}>
 				{emailError && <div className={styles.errorLabel}>{emailError}</div>}
 				<input
 					name='email'
 					type='email'
-					value={email}
 					placeholder='email'
-					onChange={onEmailChange}
-					onBlur={onEmailBlur}
 					className={styles.inputField}
+					{...register('email')}
 				/>
-
 				{passwordError && <div className={styles.errorLabel}>{passwordError}</div>}
 				<input
 					name='password'
 					type='password'
-					value={password}
 					placeholder='пароль'
-					onChange={onPasswordChange}
 					className={styles.inputField}
+					{...register('password')}
 				/>
-
 				{confirmPasswordError && (
 					<div className={styles.errorLabel}>{confirmPasswordError}</div>
 				)}
 				<input
 					name='confirmPassword'
 					type='password'
-					value={confirmPassword}
 					placeholder='подтверждение пароля'
-					onChange={onConfirmPasswordChange}
 					className={styles.inputField}
+					{...register('confirmPassword')}
 				/>
-
 				<button
 					type='submit'
-					ref={submitButtonRef}
-					disabled={
-						emailError !== null || passwordError !== null || confirmPasswordError !== null
-					}
-					className={styles.submitButton}
+					disabled={!!emailError || !!passwordError || !!confirmPasswordError}
 				>
 					Зарегистрироваться
 				</button>
